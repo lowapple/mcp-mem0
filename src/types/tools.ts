@@ -1,5 +1,50 @@
+/**
+ * @fileoverview MCP Tool Definitions for Mem0 Memory Management
+ * 
+ * This module defines the four main MCP (Model Context Protocol) tools for memory operations:
+ * - memory_add: Store new memories with enhanced metadata
+ * - memory_search: Advanced search with filtering and pagination  
+ * - memory_update: Update existing memories by ID
+ * - memory_delete: Delete memories (single or bulk operations)
+ * 
+ * Each tool follows MCP specification with detailed JSON schemas for input validation
+ * and comprehensive descriptions for optimal user experience.
+ * 
+ * @author MCP Mem0 Team
+ * @version 0.0.1
+ * @since 0.0.1
+ */
+
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
+/**
+ * MCP Tool for adding new memories to Mem0 storage
+ * 
+ * This tool provides comprehensive memory storage capabilities with enhanced metadata support.
+ * It follows a structured approach to storing coding knowledge, technical documentation,
+ * and implementation details for future reference and retrieval.
+ * 
+ * **Key Features:**
+ * - Complete code implementations with dependencies
+ * - Technical context including versions and compatibility
+ * - Structured metadata for categorization and importance scoring
+ * - Enhanced search capabilities through tags and source tracking
+ * 
+ * **Input Schema:**
+ * - `content` (required): Comprehensive content following detailed guidelines
+ * - `userId` (optional): User ID for memory isolation, defaults to environment variable
+ * - `metadata` (optional): Enhanced metadata object with category, importance, tags, source
+ * 
+ * **Metadata Structure:**
+ * - `category`: Domain classification (frontend, backend, devops, etc.)
+ * - `importance`: Priority level 1-10 (1-3: reference, 4-6: useful, 7-8: important, 9-10: critical)
+ * - `tags`: Searchable keywords for technologies and concepts
+ * - `source`: Origin context (conversation, documentation, tutorial, etc.)
+ * 
+ * @constant
+ * @type {Tool}
+ * @since 0.0.1
+ */
 export const MEMORY_ADD_TOOL: Tool = {
   name: 'memory_add',
   description: `Add a new coding preference, snippet, or technical knowledge to mem0 for future reference.
@@ -105,6 +150,42 @@ Testing: [Jest test examples...]"`,
   },
 };
 
+/**
+ * MCP Tool for searching stored memories with advanced filtering
+ * 
+ * This tool provides powerful semantic search capabilities with comprehensive filtering,
+ * pagination, and sorting options. It uses intelligent search algorithms to find
+ * relevant stored memories based on natural language queries.
+ * 
+ * **Key Features:**
+ * - Semantic search with natural language queries
+ * - Advanced filtering by category, tags, importance, and date ranges
+ * - Multiple sorting options (relevance, date, importance)
+ * - Pagination support with configurable limits
+ * - Rich result formatting with metadata display
+ * 
+ * **Input Schema:**
+ * - `query` (required): Natural language search query
+ * - `userId` (optional): User ID for memory isolation
+ * - `filters` (optional): Advanced filtering options
+ * - `limit` (optional): Maximum results to return (1-100, default: 10)
+ * - `sort` (optional): Sort order (relevance, date, importance, default: relevance)
+ * 
+ * **Filter Options:**
+ * - `category`: Filter by domain (frontend, backend, devops, etc.)
+ * - `tags`: Filter by specific technologies or concepts
+ * - `importance_min`: Minimum importance level (1-10)
+ * - `date_range`: Filter by creation date range
+ * 
+ * **Performance Notes:**
+ * - Results ranked by semantic relevance to query
+ * - Configurable result limits for performance optimization
+ * - Intelligent caching for frequently accessed memories
+ * 
+ * @constant
+ * @type {Tool}
+ * @since 0.0.1
+ */
 export const MEMORY_SEARCH_TOOL: Tool = {
   name: 'memory_search',
   description: `Search through stored coding knowledge using intelligent semantic search.
@@ -217,6 +298,44 @@ SEARCH CAPABILITIES:
   },
 };
 
+/**
+ * MCP Tool for updating existing memories in Mem0 storage
+ * 
+ * This tool enables modification of stored memories to keep them current and accurate.
+ * It supports updating both content and metadata, allowing for continuous improvement
+ * of stored knowledge as technologies evolve and understanding deepens.
+ * 
+ * **Key Features:**
+ * - Update memory content while preserving history
+ * - Modify metadata including category, importance, tags, and source
+ * - Version tracking with change documentation
+ * - Flexible partial updates (content only, metadata only, or both)
+ * 
+ * **Input Schema:**
+ * - `memory_id` (required): Unique identifier from search results
+ * - `userId` (optional): User ID for memory isolation
+ * - `updates` (required): Object containing content and/or metadata updates
+ * 
+ * **Update Options:**
+ * - `content`: Updated content following comprehensive guidelines
+ * - `metadata`: Updated metadata with category, importance, tags, source
+ * 
+ * **Best Practices:**
+ * - Preserve original working version in comments when updating
+ * - Document what changed and why in the update
+ * - Test updated code before storing
+ * - Update related tags and metadata accordingly
+ * - Increase importance if update significantly improves solution
+ * 
+ * **Performance Notes:**
+ * - Atomic updates to prevent partial state corruption
+ * - Validation of memory_id before attempting update
+ * - Optimistic updates with rollback capability
+ * 
+ * @constant
+ * @type {Tool}
+ * @since 0.0.1
+ */
 export const MEMORY_UPDATE_TOOL: Tool = {
   name: 'memory_update',
   description: `Update existing coding memories to keep them current and accurate.
@@ -308,6 +427,53 @@ BEST PRACTICES:
   },
 };
 
+/**
+ * MCP Tool for safely deleting memories from Mem0 storage
+ * 
+ * This tool provides secure deletion capabilities for individual or bulk memory removal.
+ * It includes comprehensive safety measures and confirmation requirements to prevent
+ * accidental deletion of valuable stored knowledge.
+ * 
+ * **Key Features:**
+ * - Single memory deletion by ID
+ * - Bulk deletion with multiple memory IDs
+ * - Required confirmation flag for safety
+ * - Comprehensive error handling and reporting
+ * - Alternative approaches to deletion (deprecation, archiving)
+ * 
+ * **Input Schema:**
+ * - `memory_id` (optional): Single memory ID to delete (exclusive with memory_ids)
+ * - `memory_ids` (optional): Array of memory IDs for bulk deletion (exclusive with memory_id)
+ * - `userId` (optional): User ID for memory isolation
+ * - `confirm` (optional): Required confirmation flag, defaults to false
+ * 
+ * **Safety Measures:**
+ * - Confirmation requirement prevents accidental deletion
+ * - Either memory_id OR memory_ids must be provided, not both
+ * - Detailed error reporting for failed deletions
+ * - Audit trail capabilities for deletion tracking
+ * 
+ * **Alternatives to Deletion:**
+ * - Update with deprecation notices instead of deleting
+ * - Lower importance score rather than removing
+ * - Add "deprecated" or "obsolete" tags for future reference
+ * - Move to different category like "archive" or "historical"
+ * 
+ * **Use Cases:**
+ * - Remove outdated information that no longer works
+ * - Clean up duplicate memories when better versions exist
+ * - Delete incorrect content with fundamental bugs
+ * - Remove experimental code that didn't work out
+ * 
+ * **Performance Notes:**
+ * - Bulk operations are atomic - all succeed or all fail
+ * - Individual deletion operations for reliability
+ * - Transaction-like behavior to maintain data consistency
+ * 
+ * @constant
+ * @type {Tool}
+ * @since 0.0.1
+ */
 export const MEMORY_DELETE_TOOL: Tool = {
   name: 'memory_delete',
   description: `Safely delete outdated, incorrect, or duplicate coding memories.
@@ -379,6 +545,33 @@ ALTERNATIVES TO DELETION:
   },
 };
 
+/**
+ * Complete collection of MCP tools for Mem0 memory management
+ * 
+ * This array contains all four memory management tools in the order they are typically used:
+ * 1. MEMORY_ADD_TOOL - For storing new memories
+ * 2. MEMORY_SEARCH_TOOL - For finding existing memories  
+ * 3. MEMORY_UPDATE_TOOL - For modifying stored memories
+ * 4. MEMORY_DELETE_TOOL - For removing unwanted memories
+ * 
+ * This collection is used by the MCP server to register all available tools
+ * and provide them to connecting clients like Claude Code.
+ * 
+ * **Usage:**
+ * - Imported by MCPServerService for tool registration
+ * - Returned by ListToolsRequestSchema handler
+ * - Each tool follows MCP specification with complete JSON schemas
+ * 
+ * **Tool Coverage:**
+ * - Complete CRUD operations for memory management
+ * - Advanced search and filtering capabilities
+ * - Bulk operations support for efficiency
+ * - Comprehensive error handling and validation
+ * 
+ * @constant
+ * @type {Tool[]}
+ * @since 0.0.1
+ */
 export const TOOLS = [
   MEMORY_ADD_TOOL,
   MEMORY_SEARCH_TOOL,

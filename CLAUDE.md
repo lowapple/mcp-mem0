@@ -6,6 +6,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a MCP (Model Context Protocol) server for Mem0 memory management, providing memory storage and retrieval capabilities using the Mem0 AI service. The server is implemented in TypeScript/Node.js using stdio transport for general MCP usage and can be installed and run via npm.
 
+### Key Features
+
+- **Enhanced Memory Storage**: Store coding knowledge with structured metadata (category, importance, tags, source)
+- **Advanced Search**: Semantic search with filtering by category, tags, importance levels, and date ranges
+- **Memory Management**: Full CRUD operations with bulk support and safety confirmations
+- **User Isolation**: Configurable user IDs for memory segregation
+- **NPM Package**: Published as `@mcp/mem0` for easy installation and usage
+
+### Documentation Status
+
+✅ **Comprehensive JSDoc documentation** has been added to all TypeScript source files:
+- All classes, methods, and interfaces are fully documented
+- Includes usage examples, error handling details, and performance notes
+- Inline comments explain complex logic sections
+- Follows modern TypeScript/JSDoc conventions
+
 ## Common Development Commands
 
 ```bash
@@ -136,3 +152,74 @@ Tools return standardized responses:
 - **Metadata Support**: Enhanced memory storage with structured metadata
 - **Bulk Operations**: Supports both single and bulk memory operations
 - **Confirmation Safety**: Delete operations require explicit confirmation
+
+## Code Quality Standards
+
+### Documentation Requirements
+
+All code changes should maintain the existing documentation standards:
+- **JSDoc Comments**: Every public class, method, and interface needs comprehensive JSDoc
+- **Examples**: Include practical usage examples in documentation
+- **Error Cases**: Document all error scenarios and recovery strategies
+- **Performance Notes**: Add performance considerations where relevant
+
+### Testing Guidelines
+
+When making changes:
+1. Test all four memory operations (add, search, update, delete)
+2. Verify error handling with invalid inputs
+3. Check bulk operations work correctly
+4. Ensure user isolation is maintained
+5. Test with actual Mem0 API to verify integration
+
+### Common Pitfalls to Avoid
+
+- **Stdio Interference**: Never log to stdout - always use stderr or safeLog method
+- **Missing User ID**: Always use getUserId() helper for consistent user resolution
+- **Uncaught Errors**: All operations must have try-catch with structured error responses
+- **Memory Leaks**: Be careful with bulk operations and large result sets
+- **API Key Exposure**: Never log or expose the MEM0_API_KEY in any output
+
+## Memory Tool Usage Patterns
+
+### Effective Memory Storage
+
+When storing memories with `memory_add`:
+- Include complete, runnable code with all imports
+- Add comprehensive metadata (category, importance 1-10, tags, source)
+- Document dependencies and version requirements
+- Include usage examples and test cases
+
+### Search Best Practices
+
+When using `memory_search`:
+- Use natural language queries for best results
+- Apply filters to narrow results (category, tags, importance_min)
+- Sort by relevance (default), date, or importance
+- Limit results appropriately (default: 10, max: 100)
+
+### Update Strategies
+
+When using `memory_update`:
+- Preserve original content in comments when updating
+- Document what changed and why
+- Update metadata to reflect changes
+- Increase importance if update improves solution significantly
+
+### Safe Deletion
+
+When using `memory_delete`:
+- Always search and review before deleting
+- Consider updating with deprecation notice instead
+- Use bulk deletion carefully - review each ID
+- Required `confirm: true` prevents accidents
+
+## Future Enhancement Ideas
+
+Potential improvements to consider:
+- Memory versioning/history tracking
+- Memory sharing between users
+- Export/import functionality
+- Memory templates for common patterns
+- Analytics on memory usage
+- Integration with other MCP tools
