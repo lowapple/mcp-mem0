@@ -282,6 +282,33 @@ Add the following to your `settings.json` to use the Dockerized server:
 }
 ```
 
+## Testing
+
+The project includes a comprehensive test suite with unit and integration tests using Jest and TypeScript.
+
+### Running Tests
+```bash
+# Run all tests
+NODE_OPTIONS='--experimental-vm-modules' pnpm test
+
+# Run tests with coverage report
+NODE_OPTIONS='--experimental-vm-modules' pnpm test:coverage
+
+# Run tests in watch mode for development
+NODE_OPTIONS='--experimental-vm-modules' pnpm test:watch
+```
+
+### Test Structure
+- **Unit Tests**: Located in `__tests__/client/` and `__tests__/services/`
+  - `mem0-client.test.ts`: 25 tests for Mem0 API client operations
+  - `mcp-server.test.ts`: 23 tests for MCP server functionality
+- **Integration Tests**: Located in `__tests__/integration/`
+  - `mcp-integration.test.ts`: 8 tests for end-to-end scenarios
+- **Test Utilities**: Helper functions in `__tests__/utils/test-helpers.ts`
+
+### Test Coverage
+The project aims for 80% code coverage across all metrics (branches, functions, lines, statements).
+
 ## Building and Production
 
 ### Building the Project

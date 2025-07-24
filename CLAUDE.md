@@ -45,6 +45,12 @@ env MEM0_API_KEY=your-key npx -y @mcp/mem0
 # Clean build artifacts
 npm run clean
 
+# Run tests (with ESM experimental flag)
+NODE_OPTIONS='--experimental-vm-modules' pnpm test
+
+# Run tests with coverage
+NODE_OPTIONS='--experimental-vm-modules' pnpm test -- --coverage
+
 # Publish to npm (after version bump)
 npm publish --access public
 ```
@@ -165,12 +171,15 @@ All code changes should maintain the existing documentation standards:
 
 ### Testing Guidelines
 
-When making changes:
-1. Test all four memory operations (add, search, update, delete)
-2. Verify error handling with invalid inputs
-3. Check bulk operations work correctly
-4. Ensure user isolation is maintained
-5. Test with actual Mem0 API to verify integration
+The project includes a comprehensive test suite with 56 tests. When making changes:
+1. Run the full test suite with `NODE_OPTIONS='--experimental-vm-modules' pnpm test`
+2. Add tests for new functionality following existing patterns
+3. Maintain 80% code coverage thresholds
+4. Test all four memory operations (add, search, update, delete)
+5. Verify error handling with invalid inputs
+6. Check bulk operations work correctly
+7. Ensure user isolation is maintained
+8. Test with actual Mem0 API to verify integration
 
 ### Common Pitfalls to Avoid
 
@@ -214,6 +223,70 @@ When using `memory_delete`:
 - Use bulk deletion carefully - review each ID
 - Required `confirm: true` prevents accidents
 
+## Testing
+
+The project includes a comprehensive test suite with 56 tests across unit and integration testing using Jest and TypeScript with ESM module support.
+
+### Test Structure
+
+```
+__tests__/
+├── client/
+│   └── mem0-client.test.ts      # 25 tests for Mem0 API client
+├── services/
+│   └── mcp-server.test.ts       # 23 tests for MCP server
+├── integration/
+│   └── mcp-integration.test.ts  # 8 tests for end-to-end scenarios
+├── utils/
+│   └── test-helpers.ts          # Shared test utilities and mocks
+├── types/
+│   └── mocks.ts                 # TypeScript mock type definitions
+└── setup.ts                     # Jest setup and global configuration
+```
+
+### Running Tests
+
+All test commands require the ESM experimental flag:
+
+```bash
+# Run all tests
+NODE_OPTIONS='--experimental-vm-modules' pnpm test
+
+# Run with coverage report
+NODE_OPTIONS='--experimental-vm-modules' pnpm test -- --coverage
+
+# Run in watch mode during development
+NODE_OPTIONS='--experimental-vm-modules' pnpm test -- --watch
+
+# Run specific test file
+NODE_OPTIONS='--experimental-vm-modules' pnpm test -- mem0-client.test.ts
+```
+
+### Test Coverage
+
+The project maintains 80% coverage thresholds for:
+- Branches
+- Functions  
+- Lines
+- Statements
+
+### ESM Module Considerations
+
+The test suite is configured for ESM modules, which requires:
+1. **Experimental VM Modules**: Use `NODE_OPTIONS='--experimental-vm-modules'`
+2. **ESM Imports**: Import from '@jest/globals' instead of global jest
+3. **File Extensions**: Use .js extensions in imports for proper resolution
+4. **Mock Handling**: Special consideration for mocking ESM modules
+
+### Writing Tests
+
+When adding new tests:
+1. Follow existing patterns in the test files
+2. Use the mock helpers from `test-helpers.ts`
+3. Ensure proper async/await handling
+4. Test both success and error scenarios
+5. Include edge cases and boundary conditions
+
 ## Future Enhancement Ideas
 
 Potential improvements to consider:
@@ -223,3 +296,5 @@ Potential improvements to consider:
 - Memory templates for common patterns
 - Analytics on memory usage
 - Integration with other MCP tools
+- Improved test coverage for edge cases
+- Performance benchmarking tests
