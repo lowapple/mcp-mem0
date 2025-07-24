@@ -1,5 +1,7 @@
 # Mem0 Memory MCP Server
 
+> **Note**: This project has been developed and maintained using [Claude Code](https://claude.ai/code) for enhanced code quality, accuracy, and completeness.
+
 A Model Context Protocol (MCP) server that provides memory storage and retrieval capabilities using [Mem0](https://github.com/mem0ai/mem0). This tool allows you to store and search through memories, making it useful for maintaining context and making informed decisions based on past interactions.
 
 ## Features
