@@ -278,6 +278,9 @@ export class Mem0ClientService {
 
       const result = await this.client.add(messages, options);
 
+      // Debug: Log the actual API response structure to understand the format
+      console.error('DEBUG: Mem0 API response structure:', JSON.stringify(result, null, 2));
+
       return {
         success: true,
         id: (result as any)?.id || 'unknown'
