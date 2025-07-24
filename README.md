@@ -16,7 +16,8 @@ A Model Context Protocol (MCP) server that provides memory storage and retrieval
 Follow these steps to run the server from the source code on your local machine. This is the best way to test changes before deployment.
 
 **1. Prerequisites**
-- Node.js (v14 or higher)
+- Node.js (v16 or higher)
+- pnpm package manager (install with `npm i -g pnpm` or visit [pnpm.io](https://pnpm.io))
 - A Mem0 API key, which can be obtained from the [Mem0 Dashboard](https://app.mem0.ai/dashboard/api-keys)
 
 **2. Setup**
@@ -27,9 +28,14 @@ Follow these steps to run the server from the source code on your local machine.
   ```
 - Install dependencies:
   ```bash
-  npm install
+  pnpm install
   ```
-- Create a `.env` file in the root directory and add your API key and optional user ID:
+- Copy `.env.example` to `.env` and add your API key and optional user ID:
+  ```bash
+  cp .env.example .env
+  ```
+  
+  Then edit `.env` with your values:
   ```
   MEM0_API_KEY=your-api-key-here
   MEM0_USER_ID=your-user-id-here  # Optional: defaults to 'mcp-mem0-user'
@@ -38,7 +44,7 @@ Follow these steps to run the server from the source code on your local machine.
 **3. Running the Development Server**
 - To start the server in development mode with hot-reloading:
   ```bash
-  npm run dev
+  pnpm dev
   ```
 - The server will now be running locally. You can connect your AI tools (like Cursor or VS Code) to this local instance for testing.
 
@@ -50,7 +56,7 @@ Follow these steps to run the server from the source code on your local machine.
 3. Configure as follows:
    - **Name**: `mem0`
    - **Type**: `command`
-   - **Command**: `npm run dev`
+   - **Command**: `pnpm dev`
    - **Working Directory**: Set this to the absolute path of your cloned `mcp-mem0` directory
 
 **VS Code:**
@@ -58,8 +64,8 @@ Follow these steps to run the server from the source code on your local machine.
   ```json
   "mcp.servers": {
     "mem0": {
-      "command": "npm",
-      "args": ["run", "dev"],
+      "command": "pnpm",
+      "args": ["dev"],
       "cwd": "/path/to/your/cloned/mcp-mem0" // IMPORTANT: Replace with the actual path
     }
   }
@@ -279,13 +285,13 @@ Add the following to your `settings.json` to use the Dockerized server:
 ### Building the Project
 To create a production-ready build:
 ```bash
-npm run build
+pnpm build
 ```
 
 ### Starting the Production Server
 To start the server from the built files (located in the `dist` directory):
 ```bash
-npm start
+pnpm start
 ```
 This is useful for running the server as a persistent service.
 
