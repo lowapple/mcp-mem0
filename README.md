@@ -25,7 +25,7 @@ Follow these steps to run the server from the source code on your local machine.
 **2. Setup**
 - Clone the repository:
   ```bash
-  git clone https://github.com/mem0ai/mem0-mcp.git
+  git clone https://github.com/lowapple/mcp-mem0.git
   cd mcp-mem0
   ```
 - Install dependencies:
