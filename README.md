@@ -1,87 +1,321 @@
-# MCP Server with Mem0 for Managing Coding Preferences
+# Mem0 Memory MCP Server
 
-This demonstrates a structured approach for using an [MCP](https://modelcontextprotocol.io/introduction) server with [mem0](https://mem0.ai) to manage coding preferences efficiently. The server can be used with Cursor and provides essential tools for storing, retrieving, and searching coding preferences.
-
-## Installation
-
-1. Clone this repository
-2. Initialize the `uv` environment:
-
-```bash
-uv venv
-```
-
-3. Activate the virtual environment:
-
-```bash
-source .venv/bin/activate
-```
-
-4. Install the dependencies using `uv`:
-
-```bash
-# Install in editable mode from pyproject.toml
-uv pip install -e .
-```
-
-5. Update `.env` file in the root directory with your mem0 API key:
-
-```bash
-MEM0_API_KEY=your_api_key_here
-```
-
-## Usage
-
-1. Start the MCP server:
-
-```bash
-uv run main.py
-```
-
-2. In Cursor, connect to the SSE endpoint, follow this [doc](https://docs.cursor.com/context/model-context-protocol) for reference:
-
-```
-http://0.0.0.0:8080/sse
-```
-
-3. Open the Composer in Cursor and switch to `Agent` mode.
-
-## Demo with Cursor
-
-https://github.com/user-attachments/assets/56670550-fb11-4850-9905-692d3496231c
+A Model Context Protocol (MCP) server that provides memory storage and retrieval capabilities using [Mem0](https://github.com/mem0ai/mem0). This tool allows you to store and search through memories, making it useful for maintaining context and making informed decisions based on past interactions.
 
 ## Features
 
-The server provides three main tools for managing code preferences:
+- Store memories with user-specific context
+- Search through stored memories with relevance scoring
+- Simple and intuitive API
+- Built on the Model Context Protocol
+- Automatic error handling
+- Support for multiple user contexts
 
-1. `add_coding_preference`: Store code snippets, implementation details, and coding patterns with comprehensive context including:
-   - Complete code with dependencies
-   - Language/framework versions
-   - Setup instructions
-   - Documentation and comments
-   - Example usage
-   - Best practices
+## Local Development and Testing
 
-2. `get_all_coding_preferences`: Retrieve all stored coding preferences to analyze patterns, review implementations, and ensure no relevant information is missed.
+Follow these steps to run the server from the source code on your local machine. This is the best way to test changes before deployment.
 
-3. `search_coding_preferences`: Semantically search through stored coding preferences to find relevant:
-   - Code implementations
-   - Programming solutions
-   - Best practices
-   - Setup guides
-   - Technical documentation
+**1. Prerequisites**
+- Node.js (v14 or higher)
+- A Mem0 API key, which can be obtained from the [Mem0 Dashboard](https://app.mem0.ai/dashboard/api-keys)
 
-## Why?
+**2. Setup**
+- Clone the repository:
+  ```bash
+  git clone https://github.com/mem0ai/mem0-mcp.git
+  cd mcp-mem0
+  ```
+- Install dependencies:
+  ```bash
+  npm install
+  ```
+- Create a `.env` file in the root directory and add your API key and optional user ID:
+  ```
+  MEM0_API_KEY=your-api-key-here
+  MEM0_USER_ID=your-user-id-here  # Optional: defaults to 'mcp-mem0-user'
+  ```
 
-This implementation allows for a persistent coding preferences system that can be accessed via MCP. The SSE-based server can run as a process that agents connect to, use, and disconnect from whenever needed. This pattern fits well with "cloud-native" use cases where the server and clients can be decoupled processes on different nodes.
+**3. Running the Development Server**
+- To start the server in development mode with hot-reloading:
+  ```bash
+  npm run dev
+  ```
+- The server will now be running locally. You can connect your AI tools (like Cursor or VS Code) to this local instance for testing.
 
-### Server
+**4. Configuring AI Tools for Local Testing**
 
-By default, the server runs on 0.0.0.0:8080 but is configurable with command line arguments like:
+**Cursor:**
+1. Go to `Settings > Features > MCP Servers`
+2. Click `+ Add New MCP Server`
+3. Configure as follows:
+   - **Name**: `mem0`
+   - **Type**: `command`
+   - **Command**: `npm run dev`
+   - **Working Directory**: Set this to the absolute path of your cloned `mcp-mem0` directory
 
+**VS Code:**
+- Add the following to your User Settings (JSON):
+  ```json
+  "mcp.servers": {
+    "mem0": {
+      "command": "npm",
+      "args": ["run", "dev"],
+      "cwd": "/path/to/your/cloned/mcp-mem0" // IMPORTANT: Replace with the actual path
+    }
+  }
+  ```
+
+## Environment Variables
+
+The server uses the following environment variables:
+
+- `MEM0_API_KEY` (required): Your Mem0 API key obtained from the [Mem0 Dashboard](https://app.mem0.ai/dashboard/api-keys)
+- `MEM0_USER_ID` (optional): Default user ID for memory operations. If not provided, defaults to `'mcp-mem0-user'`
+
+When using the tools, you can either:
+1. Provide a `userId` parameter in each tool call to override the default
+2. Omit the `userId` parameter to use the `MEM0_USER_ID` environment variable value
+3. If neither is provided, the system will use `'mcp-mem0-user'` as the fallback
+
+## Available Tools
+
+### 1. Add Memory Tool (memory_add)
+
+Store new memories with enhanced metadata support for better organization.
+
+```json
+{
+  "name": "memory_add",
+  "arguments": {
+    "content": "User prefers dark mode interface and minimal design",
+    "userId": "user123",  // Optional: will use MEM0_USER_ID env var if not provided
+    "metadata": {
+      "category": "preferences",
+      "importance": 8,
+      "tags": ["UI", "interface", "design"],
+      "source": "user_conversation"
+    }
+  }
+}
 ```
-uv run main.py --host <your host> --port <your port>
+
+### 2. Search Memories Tool (memory_search)
+
+Advanced search with filtering, pagination, and sorting capabilities.
+
+```json
+{
+  "name": "memory_search",
+  "arguments": {
+    "query": "interface preferences",
+    "userId": "user123",  // Optional: will use MEM0_USER_ID env var if not provided
+    "filters": {
+      "category": "preferences",
+      "tags": ["UI"],
+      "importance_min": 5
+    },
+    "limit": 10,
+    "sort": "importance"
+  }
+}
 ```
 
-The server exposes an SSE endpoint at `/sse` that MCP clients can connect to for accessing the coding preferences management tools.
+### 3. Update Memory Tool (memory_update)
 
+Update existing memories by ID to modify content or metadata.
+
+```json
+{
+  "name": "memory_update",
+  "arguments": {
+    "memory_id": "mem_abc123",
+    "userId": "user123",  // Optional: will use MEM0_USER_ID env var if not provided
+    "updates": {
+      "content": "Updated: User prefers dark mode with high contrast",
+      "metadata": {
+        "importance": 9,
+        "tags": ["UI", "interface", "accessibility"]
+      }
+    }
+  }
+}
+```
+
+### 4. Delete Memory Tool (memory_delete)
+
+Delete memories by ID with support for both single and bulk operations.
+
+```json
+{
+  "name": "memory_delete",
+  "arguments": {
+    "memory_id": "mem_abc123",
+    "userId": "user123",  // Optional: will use MEM0_USER_ID env var if not provided
+    "confirm": true
+  }
+}
+```
+
+For bulk deletion:
+```json
+{
+  "name": "memory_delete",
+  "arguments": {
+    "memory_ids": ["mem_abc123", "mem_def456"],
+    "userId": "user123",  // Optional: will use MEM0_USER_ID env var if not provided
+    "confirm": true
+  }
+}
+```
+
+## Response Format
+
+### Enhanced Memory Add Response (memory_add)
+
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Memory added successfully with ID: mem_abc123"
+    }
+  ],
+  "isError": false
+}
+```
+
+### Advanced Search Response (memory_search)
+
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Memory: User prefers dark mode interface\nRelevance: 0.95\nCategory: preferences\nImportance: 8\nTags: UI, interface, design\nSource: user_conversation\nID: mem_abc123\n---"
+    }
+  ],
+  "isError": false
+}
+```
+
+### Update Memory Response (memory_update)
+
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Memory mem_abc123 updated successfully"
+    }
+  ],
+  "isError": false
+}
+```
+
+### Delete Memory Response (memory_delete)
+
+Single deletion:
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Memory mem_abc123 deleted successfully"
+    }
+  ],
+  "isError": false
+}
+```
+
+Bulk deletion:
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Deleted 2 memories successfully"
+    }
+  ],
+  "isError": false
+}
+```
+
+## Usage with Docker
+
+You can run this server inside a Docker container, which is useful for isolated and consistent environments.
+
+**1. Build the Docker Image**
+From the root of the project, run the following command:
+```bash
+docker build -t mcp-mem0 .
+```
+
+**2. Configure in AI Tools**
+Add the following to your `settings.json` to use the Dockerized server:
+```json
+"mcpServers": {
+  "mem0": {
+    "command": "docker",
+    "args": [
+      "run",
+      "-i",
+      "--rm",
+      "-e",
+      "MEM0_API_KEY",
+      "-e",
+      "MEM0_USER_ID",
+      "mcp-mem0"
+    ],
+    "env": {
+      "MEM0_API_KEY": "your-api-key-here",
+      "MEM0_USER_ID": "your-user-id-here"
+    }
+  }
+}
+```
+
+## Building and Production
+
+### Building the Project
+To create a production-ready build:
+```bash
+npm run build
+```
+
+### Starting the Production Server
+To start the server from the built files (located in the `dist` directory):
+```bash
+npm start
+```
+This is useful for running the server as a persistent service.
+
+## Error Handling
+
+The server includes error handling for:
+
+- API connection issues
+- Invalid memory operations
+- Search errors
+- Authentication failures
+
+Example error response:
+
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Error: Failed to search memories: Invalid API key"
+    }
+  ],
+  "isError": true
+}
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT

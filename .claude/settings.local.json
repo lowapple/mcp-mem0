@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__zen__refactor",
+      "Bash(mkdir:*)",
+      "mcp__zen__planner",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}

@@ -1,10 +1,10 @@
 {
-  "name": "@mem0/mcp-server",
+  "name": "@mcp/mem0",
   "version": "0.0.1",
   "main": "index.js",
   "type": "module",
   "bin": {
-    "mem0-mcp": "dist/index.js"
+    "mcp-mem0": "dist/index.js"
   },
   "scripts": {
     "build": "tsup",
